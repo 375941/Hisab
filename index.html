@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><title>আমার হিসাব</title>
+<style>
+:root{--bg:#f1f5f4;--card:#fff;--ink:#12302c;--mute:#5f7773;--line:#dbe5e3;--in:#0f766e;--out:#be3a34;--acc:#0f766e;--on:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1716;--card:#15231f;--ink:#e6f2ef;--mute:#8fa8a3;--line:#243a35;--in:#3fc1b0;--out:#f08a83;--acc:#3fc1b0;--on:#06201c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hind Siliguri","Noto Sans Bengali","Segoe UI",sans-serif;line-height:1.5}
+main{max-width:520px;margin:0 auto;padding:16px 16px 40px}h1{font-size:22px;margin:4px 0 16px}h2{font-size:19px;margin:0}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}.back{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;font:inherit;font-weight:600}
+.big3{display:block;width:100%;text-align:left;margin-bottom:12px;padding:22px 18px;border:0;border-radius:16px;background:var(--acc);color:var(--on);font:inherit;font-size:20px;font-weight:700}
+.big3 small{display:block;font-weight:400;font-size:14px;opacity:.9}.big3.alt{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:14px;color:var(--mute);margin:10px 0 4px}
+input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.btn{width:100%;margin-top:14px;padding:14px;border:0;border-radius:12px;background:var(--acc);color:var(--on);font:inherit;font-weight:700;font-size:17px}
+.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line);font-size:15px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.msg{font-size:14px;color:var(--mute)}.row{display:flex;gap:8px}.row>*{flex:1}.row>.sm{flex:0 0 90px}
+.acc{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;font:inherit}
+.cm{text-align:right}.cm small{display:block;color:var(--mute);font-size:12px}.cm strong{color:var(--in);font-size:17px}
+.acc b{font-size:18px;display:block}.acc span{color:var(--mute);letter-spacing:1px}
+.res{background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:12px}.bigp{font-size:26px;font-weight:700;color:var(--in)}
+table{width:100%;border-collapse:collapse}th,td{padding:10px 6px;border-bottom:1px solid var(--line);text-align:right;font-size:15px}th:first-child,td:first-child{text-align:left}th{color:var(--mute);font-weight:500;font-size:13px}td.n{color:var(--in);font-weight:700}
+.del{border:0;background:none;color:var(--mute);font-size:18px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s}.toast.show{opacity:1}
+</style></head><body><main>
+
+<section id="home"><h1>আমার হিসাব</h1>
+<button class="big3" data-go="list">একাউন্টসমূহ<small>সব একাউন্ট ও মাসের হিসাব দেখুন</small></button>
+<button class="big3 alt" data-go="open">একাউন্ট খুলুন<small>নতুন নাম ও নাম্বার</small></button>
+<button class="big3 alt" data-go="scan">স্ক্যান করুন<small>পেজ থেকে ইনকাম একাউন্টে যোগ করুন</small></button>
+<p class="msg" style="margin-top:18px">ব্যাকআপ: <a href="#" id="bkl" style="color:var(--acc)">কপি করুন</a> · <a href="#" id="rsl" style="color:var(--acc)">ফিরিয়ে আনুন</a></p></section>
+
+<section id="list" hidden><div class="top"><button class="back" data-go="home">← ফিরুন</button><h2>একাউন্টসমূহ</h2></div><div id="lst"></div></section>
+
+<section id="open" hidden><div class="top"><button class="back" data-go="home">← ফিরুন</button><h2>একাউন্ট খুলুন</h2></div>
+<div class="box"><label for="nm" style="margin-top:0">নাম</label><input id="nm" autocomplete="off">
+<div class="row"><div class="sm"><label for="cd">২ ডিজিট কোড</label><input id="cd" inputmode="numeric" maxlength="2" placeholder="১২"></div>
+<div><label for="co">মূল নাম্বার (৬ অংক)</label><input id="co" inputmode="numeric" maxlength="6" placeholder="৪৫৬৭৮৯"></div></div>
+<label for="op">শুরুর ইনকাম (এ যাবৎকালের মোট)</label><input id="op" inputmode="decimal" placeholder="যেমন ৫০০০০০, না থাকলে ০">
+<div class="res msg" id="pv">একাউন্ট নাম্বার: —</div>
+<button class="btn" id="mk" type="button">একাউন্ট খুলুন</button></div></section>
+
+<section id="det" hidden><div class="top"><button class="back" data-go="list">← ফিরুন</button><h2 id="dn"></h2></div><div class="box" id="db"></div>
+<button class="btn ghost" id="da" type="button" style="color:var(--out)">এই একাউন্ট মুছুন</button></section>
+
+<section id="scan" hidden><div class="top"><button class="back" data-go="home">← ফিরুন</button><h2>স্ক্যান করুন</h2></div><div class="box">
+<input id="file" type="file" accept="image/*" capture="environment" hidden>
+<video id="vid" playsinline muted style="width:100%;border-radius:12px;background:#000;display:none;margin-bottom:10px"></video><canvas id="cv" hidden></canvas>
+<button class="btn" id="cam" type="button" style="margin-top:0">ক্যামেরা চালু করুন</button>
+<label style="display:flex;gap:8px;align-items:center;font-size:15px;color:var(--ink)"><input type="checkbox" id="auto" style="width:auto">পেলেই নিজে সেভ করুন</label>
+<p class="msg" id="st">ক্যামেরা চালু করে পেজের দিকে ধরে রাখুন। অ্যাপ নিজে একাউন্ট নাম্বার ও মোট ইনকাম পড়ে নেবে।</p>
+<p class="msg" id="dbg"></p>
+<p class="msg"><a href="#" id="pic" style="color:var(--acc)">ক্যামেরা না চললে: ছবি তুলে পড়ুন</a></p>
+<label for="no">একাউন্ট নাম্বার (৮ অংক)</label><input id="no" inputmode="numeric" maxlength="8"><div id="who" class="msg"></div>
+<label for="tot">এ যাবৎকালের মোট ইনকাম</label><input id="tot" inputmode="decimal">
+<label for="ym">মাস</label><input id="ym" type="month">
+<div class="res" id="calc" aria-live="polite">—</div>
+<button class="btn" id="save" type="button">নিশ্চিত করে সেভ করুন</button></div></section>
+
+<section id="bk" hidden><div class="top"><button class="back" data-go="home">← ফিরুন</button><h2>ব্যাকআপ</h2></div><div class="box">
+<p class="msg">ফোনের ডেটা মুছলে হিসাব চলে যেতে পারে। কপি করে নিজের নোটে রাখুন।</p>
+<button class="btn ghost" id="bkb" type="button">ব্যাকআপ কপি করুন</button>
+<label for="rs">ফিরিয়ে আনতে এখানে পেস্ট করুন</label><input id="rs"><button class="btn ghost" id="rb" type="button">ফিরিয়ে আনুন</button></div></section>
+</main><div class="toast" id="toast" role="status"></div>
+<script>
+(function(){
+var K="hisab:v3",$=function(i){return document.getElementById(i)},S={accs:[],recs:[]},cur=null;
+try{var s=localStorage.getItem(K);if(s)S=JSON.parse(s)}catch(e){}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast("সেভ করা যায়নি")}}
+function toast(m){var t=$("toast");t.textContent=m;t.className="toast show";setTimeout(function(){t.className="toast"},2200)}
+var BN="০১২৩৪৫৬৭৮৯";function b(n){return String(n).replace(/\d/g,function(d){return BN[d]})}
+function en(s){return String(s).replace(/[০-৯]/g,function(d){return BN.indexOf(d)})}
+function tk(n){return "৳ "+b(Math.round(n*100)/100).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var MN=["জানুয়ারি","ফেব্রুয়ারি","মার্চ","এপ্রিল","মে","জুন","জুলাই","আগস্ট","সেপ্টেম্বর","অক্টোবর","নভেম্বর","ডিসেম্বর"];
+function mn(k){var p=k.split("-");return MN[+p[1]-1]+" "+b(p[0])}
+function ymNow(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)}
+function find(no){return S.accs.filter(function(a){return a.no===no})[0]}
+function recsOf(no){return S.recs.filter(function(r){return r.no===no}).sort(function(a,b){return a.ym<b.ym?-1:1})}
+function prevOf(no,ym){var p=null;recsOf(no).forEach(function(r){if(r.ym<ym)p=r});return p}
+function go(id){if(id!=="scan")stop();["home","list","open","det","scan","bk"].forEach(function(x){$(x).hidden=x!==id});window.scrollTo(0,0);
+if(id==="list")drawList();if(id==="open"){$("nm").value=$("cd").value=$("co").value=$("op").value="";prev()}if(id==="scan"){$("ym").value=ymNow();calc()}}
+document.addEventListener("click",function(e){var g=e.target.closest&&e.target.closest("[data-go]");if(g)go(g.dataset.go)});
+function curNet(a){var R=recsOf(a.no);if(!R.length)return null;var r=R[R.length-1],p=prevOf(a.no,r.ym);return r.total-(p?p.total:(a.open||0))}
+function drawList(){$("lst").innerHTML=S.accs.length?S.accs.slice().sort(function(x,y){return (+x.no.slice(2))-(+y.no.slice(2))||(x.no<y.no?-1:1)}).map(function(a,i){var c=curNet(a);return '<button class="acc" data-no="'+a.no+'"><div><b>'+b(i+1)+'. '+esc(a.name)+'</b><span>'+b(a.no)+'</span></div><div class="cm"><small>সর্বশেষ নিট ইনকাম</small><strong>'+(c===null?'—':tk(c))+'</strong></div></button>'}).join(""):'<div class="box msg">এখনো কোনো একাউন্ট নেই। “একাউন্ট খুলুন” থেকে শুরু করুন।</div>'}
+$("lst").onclick=function(e){var a=e.target.closest(".acc");if(a)detail(a.dataset.no)};
+function detail(no){cur=no;var a=find(no),R=recsOf(no);$("dn").textContent=a.name;
+var h='<p class="msg" style="margin-top:0">একাউন্ট নাম্বার: <b style="color:var(--ink);letter-spacing:1px">'+b(no)+'</b></p>';
+{var rows="",pv=a.open||0,cn=0,hasC=false;R.forEach(function(r){var isC=r.ym===ymNow();if(isC){cn=r.total-pv;hasC=true}rows='<tr'+(isC?' style="background:var(--bg)"':'')+'><td>'+mn(r.ym)+'</td><td>'+tk(r.total)+'</td><td class="n">'+tk(r.total-pv)+'</td><td><button class="del" data-m="'+r.ym+'" aria-label="মুছুন">×</button></td></tr>'+rows;pv=r.total});
+if(!R.length)h+='<p class="msg">এখনো কোনো মাসের হিসাব নেই। “স্ক্যান করুন” থেকে যোগ করুন।</p>';
+rows+='<tr><td>শুরুর মোট</td><td>'+tk(a.open||0)+'</td><td>—</td><td></td></tr>';
+var tot=R.length?R[R.length-1].total:(a.open||0);
+h+='<div class="row"><div class="res"><span class="msg">এ যাবৎকালের মোট ইনকাম</span><div class="bigp">'+tk(tot)+'</div></div><div class="res"><span class="msg">বর্তমান মাসের ইনকাম</span><div class="bigp">'+(hasC?tk(cn):'—')+'</div></div></div><p class="msg" style="margin:14px 0 2px">প্রতি মাসের হিসাব</p>';
+h+='<div style="overflow-x:auto"><table><tr><th>মাস</th><th>মোট ইনকাম</th><th>নিট ইনকাম</th><th></th></tr>'+rows+'</table></div>'}
+$("db").innerHTML=h;go("det");$("dn").textContent=a.name}
+$("db").onclick=function(e){var m=e.target.dataset&&e.target.dataset.m;if(m&&confirm("এই মাসের এন্ট্রি মুছবেন?")){S.recs=S.recs.filter(function(r){return !(r.no===cur&&r.ym===m)});save();detail(cur)}};
+$("da").onclick=function(){if(confirm("একাউন্ট ও তার সব হিসাব মুছে যাবে। নিশ্চিত?")){S.accs=S.accs.filter(function(a){return a.no!==cur});S.recs=S.recs.filter(function(r){return r.no!==cur});save();go("list")}};
+function prev(){var c=en($("cd").value).trim(),m=en($("co").value).trim();$("pv").textContent="একাউন্ট নাম্বার: "+((/^\d{2}$/.test(c)&&/^\d{6}$/.test(m))?b(c+m):"—")}
+$("cd").oninput=$("co").oninput=prev;
+$("mk").onclick=function(){var n=$("nm").value.trim(),c=en($("cd").value).trim(),m=en($("co").value).trim();
+if(!n){toast("নাম লিখুন");return}if(!/^\d{2}$/.test(c)){toast("কোড ঠিক ২ ডিজিট হতে হবে");return}if(!/^\d{6}$/.test(m)){toast("মূল নাম্বার ঠিক ৬ অংক হতে হবে");return}
+var o=parseFloat(en($("op").value).replace(/,/g,""));if(isNaN(o)||o<0){toast("শুরুর ইনকাম লিখুন (না থাকলে ০)");return}
+if(find(c+m)){toast("এই নাম্বারে একাউন্ট আছে");return}
+S.accs.push({no:c+m,name:n,open:o});save();toast("একাউন্ট খোলা হয়েছে");go("list")};
+function calc(){var no=en($("no").value).trim(),a=find(no),t=parseFloat(en($("tot").value).replace(/,/g,"")),ym=$("ym").value;
+$("who").textContent=/^\d{8}$/.test(no)?(a?"নাম: "+a.name:"এই নাম্বারে কোনো একাউন্ট নেই"):"";
+if(!a||isNaN(t)||!ym){$("calc").textContent="—";return null}
+var p=prevOf(no,ym),pv=p?p.total:(a.open||0);
+$("calc").innerHTML="আগের মোট: <b>"+tk(pv)+"</b><br>এই মাসের নিট ইনকাম: <span class='bigp'>"+tk(t-pv)+"</span>"+(t<pv?'<br><span style="color:var(--out)">সতর্কতা: নতুন মোট আগের চেয়ে কম</span>':"");return{no:no,ym:ym,total:t}}
+["no","tot","ym"].forEach(function(i){$(i).oninput=calc});
+$("save").onclick=function(){var r=calc();if(!r){toast("একাউন্ট নাম্বার ও মোট ইনকাম ঠিক করুন");return}
+S.recs=S.recs.filter(function(x){return !(x.no===r.no&&x.ym===r.ym)});S.recs.push(r);save();toast("একাউন্টে যোগ হয়েছে");$("no").value=$("tot").value="";calc();$("st").textContent="সেভ হয়েছে। পরের পেজ স্ক্যান করুন।"};
+function showBk(){go("bk")}$("bkl").onclick=$("rsl").onclick=function(e){e.preventDefault();showBk()};
+$("bkb").onclick=function(){var t=JSON.stringify(S);if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){toast("কপি হয়েছে")},function(){$("rs").value=t;toast("বক্সের লেখা কপি করুন")});else{$("rs").value=t;toast("বক্সের লেখা কপি করুন")}};
+$("rb").onclick=function(){try{var v=JSON.parse($("rs").value);if(!v.accs||!v.recs)throw 0;if(confirm("বর্তমান হিসাব বদলে যাবে। ঠিক আছে?")){S=v;save();$("rs").value="";toast("ফিরিয়ে আনা হয়েছে")}}catch(e){toast("ব্যাকআপ সঠিক নয়")}};
+var worker=null,stream=null,timer=null,busy=false,last="",streak=0,lastSaved="";
+function loadT(){return new Promise(function(res,rej){if(window.Tesseract)return res();var t=document.createElement("script");t.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";t.onload=res;t.onerror=function(){rej()};document.head.appendChild(t)})}
+function getW(){return loadT().then(function(){return worker||Tesseract.createWorker("eng")}).then(function(w){if(!worker){worker=w;return w.setParameters({tessedit_char_whitelist:"0123456789,."}).then(function(){return w})}return w})}
+function nums(t){return (t.match(/\d[\d,]*/g)||[]).map(function(x){return x.replace(/,/g,"")}).filter(Boolean)}
+function near(a,c){if(a.length!==c.length)return false;var d=0;for(var i=0;i<a.length;i++)if(a[i]!==c[i])d++;return d<=1}
+function parse(text){var n=nums(text),acc=null,tok=null;S.accs.forEach(function(a){if(acc)return;n.forEach(function(x){if(!acc&&near(x,a.no)){acc=a.no;tok=x}})});if(!acc)return null;var amt=n.filter(function(x){return x!==tok}).sort(function(a,c){return c.length-a.length})[0];return amt?{acc:acc,amt:amt}:null}
+function fill(r){$("no").value=r.acc;$("tot").value=r.amt;calc()}
+function stop(){clearInterval(timer);timer=null;if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}$("vid").style.display="none";$("cam").textContent="ক্যামেরা চালু করুন"}
+function tick(){if(busy||!stream)return;var v=$("vid");if(!v.videoWidth)return;busy=true;var c=$("cv");var k=Math.min(1,1000/v.videoWidth);c.width=Math.round(v.videoWidth*k);c.height=Math.round(v.videoHeight*k);c.getContext("2d").drawImage(v,0,0,c.width,c.height);
+worker.recognize(c).then(function(res){var r=parse(res.data.text),st=$("st");$("dbg").textContent="অ্যাপ যা পড়ছে: "+(nums(res.data.text).join(", ")||"কোনো সংখ্যা নয়");
+if(!r){streak=0;last="";st.textContent="খুঁজছি… পেজটা স্থির করে ধরে রাখুন";return}
+var key=r.acc+"|"+r.amt;if(key===lastSaved){st.textContent="এই পেজ সেভ হয়ে গেছে। পরের পেজ দেখান।";return}
+streak=key===last?streak+1:1;last=key;fill(r);st.textContent="পেয়েছি: "+b(r.amt)+" (নিশ্চিত হচ্ছি "+b(streak)+"/২)";
+if(streak>=2){if($("auto").checked){$("save").click();lastSaved=key;streak=0;last="";st.textContent="সেভ হয়েছে। পরের পেজ দেখান।"}else{stop();st.textContent="পড়া হয়েছে। নিচে মিলিয়ে সেভ চাপুন।"}}
+}).catch(function(){}).then(function(){busy=false})}
+$("cam").onclick=function(){if(stream){stop();return}var st=$("st");st.textContent="ক্যামেরা চালু হচ্ছে…";
+Promise.resolve().then(function(){return navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false})}).then(function(m){stream=m;var v=$("vid");v.srcObject=m;v.style.display="block";v.play();$("cam").textContent="ক্যামেরা বন্ধ করুন";last="";streak=0;st.textContent="ক্যামেরা চালু। পড়ার টুল তৈরি হচ্ছে (প্রথমবার ইন্টারনেট লাগে)…";
+getW().then(function(){if(!stream)return;st.textContent="পেজের দিকে ক্যামেরা ধরে রাখুন…";timer=setInterval(tick,700)}).catch(function(){st.textContent="পড়ার টুল নামানো যায়নি। ইন্টারনেট দেখুন।"})})
+.catch(function(x){st.textContent=(x&&x.name==="NotAllowedError")?"ক্যামেরার অনুমতি দেওয়া হয়নি। ব্রাউজারের সেটিংসে এই সাইটকে ক্যামেরার অনুমতি দিন।":"ক্যামেরা চালু করা গেল না ("+((x&&x.name)||"অজানা")+")। নিচের “ছবি তুলে পড়ুন” ব্যবহার করুন।"})};
+$("pic").onclick=function(e){e.preventDefault();$("file").click()};
+$("file").onchange=function(){var f=this.files[0];if(!f)return;var st=$("st");st.textContent="পড়ছি…";
+getW().then(function(w){return w.recognize(f)}).then(function(res){var r=parse(res.data.text);$("dbg").textContent="অ্যাপ যা পড়ছে: "+(nums(res.data.text).join(", ")||"কোনো সংখ্যা নয়");if(!r){st.textContent="একাউন্ট নাম্বার মেলেনি। নিজে লিখে দিন।";return}fill(r);st.textContent="পড়া হয়েছে। মিলিয়ে সেভ চাপুন।"}).catch(function(){st.textContent="পড়া যায়নি। প্রথমবার ইন্টারনেট লাগতে পারে।"});this.value=""};
+if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
+})();
+</script></body></html>
